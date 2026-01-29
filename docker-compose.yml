@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: perl-app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+
+  mongo:
+    image: mongo:7
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+
