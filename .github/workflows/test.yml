@@ -1,4 +1,4 @@
-name: Perl Quickstart Test
+name: Perl + MongoDB Quickstart Test
 
 on:
   push:
@@ -6,34 +6,32 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
 
     steps:
-      # Step 1: Get your repository code
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Install Perl
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: "5.36"
 
-      # Step 3: Install cpanm
-      - name: Install cpanminus
-        run: |
-          curl -L https://cpanmin.us | perl - App::cpanminus
-
-      # Step 4: Install dependencies
       - name: Install dependencies
         run: |
-          cpanm --installdeps . --notest
+          cpanm --notest --installdeps .
 
-      # Step 5: Basic syntax check
-      - name: Run Perl syntax check
+      - name: Start app in background
         run: |
-          perl -c app.pl
+          perl app.pl daemon -l http://127.0.0.1:5000 &
+          sleep 5
+
+      - name: Test health endpoint
+        run: |
+          curl http://127.0.0.1:5000/
