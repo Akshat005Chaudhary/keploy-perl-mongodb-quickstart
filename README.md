@@ -64,6 +64,8 @@ Before running this command, make sure the server is stopped using `ctrl+C`
 keploy record -c "perl app.pl daemon -l http://localhost:5000"
 ```
 
+![alt text](image.png)
+
 ### Testing the APIs (Generate Traffic)
 
 **1. POST /shorten**
@@ -71,6 +73,15 @@ keploy record -c "perl app.pl daemon -l http://localhost:5000"
 curl -X POST http://localhost:5000/shorten \
   -H "Content-Type: application/json" \
   -d '{"url":"https://keploy.io"}'
+```
+
+This will return response:
+
+```bash
+{
+  "code": "QWERTY",
+  "shortUrl": "http://localhost:5000QWERTY"
+}
 ```
 
 **2. Redirect Call**
@@ -81,14 +92,40 @@ Suppose the received code is `QWERTY`
 curl -v http://localhost:5000/QWERTY
 ```
 
+This is return 302 status code and redirect to the original url if code is correct.
+
+```bash
+HTTP/1.1 302 Found
+Location: https://keploy.io
+```
+
 **3. Check Stats**
 ```bash
 curl http://localhost:5000/stats/QWERTY
 ```
 
+This will return the stats of the short url.
+
+```bash
+{
+  "clicks": 1,
+  "code": "QWERTY",
+  "createdAt": "2026-01-30T06:47:03Z",
+  "originalUrl": "https://keploy.io"
+}
+```
+
 **4. Negative Case**
 ```bash
 curl http://localhost:5000/XXXXXX
+```
+
+This is give error:
+
+```bash
+{
+  "error": "Short URL code not found"
+}
 ```
 
 Now stop recording with `ctrl+C`
@@ -97,6 +134,12 @@ Now stop recording with `ctrl+C`
 ```bash
 keploy test -c "perl app.pl daemon -l http://localhost:5000"
 ```
+
+![alt text](image-1.png)
+
+10 Test cases were generated and 7 passed while 3 failed. This is not a bug with keploy but infact shows how robust keploy is with testing our applications and API. The `/shorten` endpoint returns a different random short code each run. While our short code generator is non-deterministic (random string).
+
+> Your number of test cases may vary from mine based on the traffic you generate.
 
 ---
 
