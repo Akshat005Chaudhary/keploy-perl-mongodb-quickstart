@@ -2,6 +2,8 @@
 
 ### Clone
 ```bash
+git clone https://github.com/Akshat005Chaudhary/keploy-perl-mongodb-quickstart.git
+cd keploy-perl-mongodb-quickstart
 ```
 
 ### Install Keploy Agent
@@ -9,8 +11,9 @@
 curl --silent -O -L https://keploy.io/install.sh && source install.sh
 ```
 
-## Option 1: Run Without Docker
+## Option 1: Run Locally (MongoDB in Docker)
 
+> This Local setup is Linux first
 > App runs locally, DB still in Docker
 
 #### Prerequisites
