@@ -1,0 +1,39 @@
+name: Perl Quickstart Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      # Step 1: Get your repository code
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # Step 2: Install Perl
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.36"
+
+      # Step 3: Install cpanm
+      - name: Install cpanminus
+        run: |
+          curl -L https://cpanmin.us | perl - App::cpanminus
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: |
+          cpanm --installdeps . --notest
+
+      # Step 5: Basic syntax check
+      - name: Run Perl syntax check
+        run: |
+          perl -c app.pl
